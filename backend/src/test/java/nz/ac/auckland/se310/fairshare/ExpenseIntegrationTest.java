@@ -165,6 +165,19 @@ class ExpenseIntegrationTest {
     }
 
     @Test
+    void ac4_duplicateParticipantIdsAreCountedOnce() {
+        var request = new CreateExpenseRequest(
+                new BigDecimal("20.00"), "Taxi", aliceId, List.of(aliceId, aliceId, bobId), null);
+
+        ExpenseResponse created = expenseService.createExpense(groupId, request, aliceId);
+
+        assertThat(created.participantUserIds()).containsExactlyInAnyOrder(aliceId, bobId);
+        assertThat(balances()).containsOnly(
+                Map.entry(aliceId, new BigDecimal("10.00")),
+                Map.entry(bobId, new BigDecimal("-10.00")));
+    }
+
+    @Test
     void ac5_payerMustBeAGroupMember() {
         var request = new CreateExpenseRequest(new BigDecimal(TAXI_AMOUNT), "Taxi", carolId, memberIds, null);
 

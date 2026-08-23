@@ -48,6 +48,7 @@ public class ExpenseService {
         }
 
         List<UserInGroup> members = request.participantUserIds().stream()
+                .distinct() // duplicate IDs must not be counted more than once in the split
                 .map(group::getMember)
                 .filter(java.util.Objects::nonNull)
                 .sorted(Comparator.comparingLong(m -> m.getUser().getId()))
@@ -83,6 +84,7 @@ public class ExpenseService {
         }
 
         List<UserInGroup> members = request.participantUserIds().stream()
+                .distinct() // duplicate IDs must not be counted more than once in the split
                 .map(group::getMember)
                 .filter(java.util.Objects::nonNull)
                 .sorted(Comparator.comparingLong(m -> m.getUser().getId()))
@@ -161,6 +163,9 @@ public class ExpenseService {
             }
             expenseShareRepository.delete(share);
         }
+        // Flush so the deletes hit the DB before the new shares are inserted, otherwise the
+        // unique constraint on (user_id, expense_id) can be violated by Hibernate's action ordering.
+        expenseShareRepository.flush();
         originalPayer.adjustNetBalance(expense.getAmount().negate());
 
         // Apply the new split

@@ -6,5 +6,7 @@ CREATE TABLE expense_share (
     CONSTRAINT fk_expense_share_expense
         FOREIGN KEY (expense_id) REFERENCES expense (expense_id),
     CONSTRAINT fk_expense_share_user
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT uq_es_user_expense
+        UNIQUE (user_id, expense_id)
 );
