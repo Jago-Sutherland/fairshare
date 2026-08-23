@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getGroupMembers } from '../api/groups';
 import { createExpense } from '../api/expenses';
+import ExpenseForm from '../components/ExpenseForm';
 import './AddExpense.css';
 
 // Built from local date because toISOString() reports the UTC date and
@@ -117,94 +118,23 @@ function AddExpense() {
                 <h1>Add an expense</h1>
                 <p className="subtitle">Split equally among selected members</p>
 
-                <form onSubmit={handleSubmit} noValidate>
-                    <div className="form-group">
-                        <label htmlFor="amount">Amount</label>
-                        <input
-                            id="amount"
-                            type="number"
-                            step="0.01"
-                            value={amount}
-                            placeholder="0.00"
-                            onChange={(event) => setAmount(event.target.value)}
-                        />
-                        {errors.amount && <span className="error">{errors.amount}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="description">Description</label>
-                        <input
-                            id="description"
-                            type="text"
-                            value={description}
-                            placeholder="What was it for?"
-                            onChange={(event) => setDescription(event.target.value)}
-                        />
-                        {errors.description && <span className="error">{errors.description}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="paidByUserId">Paid by</label>
-                        <select
-                            id="paidByUserId"
-                            value={paidByUserId}
-                            onChange={(event) => setPaidByUserId(event.target.value)}
-                        >
-                            {/* AC5: only current members of the group */}
-                            {members.map((member) => (
-                                <option key={member.userId} value={member.userId}>
-                                    {member.username}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.paidByUserId && <span className="error">{errors.paidByUserId}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="expenseDate">Date</label>
-                        <input
-                            id="expenseDate"
-                            type="date"
-                            value={expenseDate}
-                            max={today()}                 // AC6: past dates only
-                            onChange={(event) => setExpenseDate(event.target.value)}
-                        />
-                        {errors.expenseDate && <span className="error">{errors.expenseDate}</span>}
-                    </div>
-
-                    <div className="select-participants"> {/* #8 AC3: split among a subset of the group */}
-                        <p>Participants</p>
-                        <ul>
-                            {members.map((member) => (
-                                <li key={member.userId}>
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            value={member.userId}
-                                            checked={participantUserIds.includes(String(member.userId))}
-                                            onChange={(event) => {
-                                                const userId = event.target.value;
-                                                if (event.target.checked) {
-                                                    setParticipantUserIds((currentIds) => [...currentIds, userId]);
-                                                } else {
-                                                    setParticipantUserIds((currentIds) => currentIds.filter((id) => id !== userId));
-                                                }
-                                            }}
-                                        />
-                                        {member.username}
-                                    </label>
-                                </li>
-                            ))}
-                        </ul>
-                        {errors.participantUserIds && <span className="error">{errors.participantUserIds}</span>}
-                    </div>
-
-                    {errors.form && <span className="error">{errors.form}</span>}
-
-                    <button type="submit" disabled={submitting}>
-                        {submitting ? 'Saving…' : 'Save expense'}
-                    </button>
-                </form>
+                <ExpenseForm
+                    amount={amount}
+                    description={description}
+                    paidByUserId={paidByUserId}
+                    expenseDate={expenseDate}
+                    participantUserIds={participantUserIds}
+                    members={members}
+                    errors={errors}
+                    submitting={submitting}
+                    onAmountChange={setAmount}
+                    onDescriptionChange={setDescription}
+                    onPaidByUserIdChange={setPaidByUserId}
+                    onExpenseDateChange={setExpenseDate}
+                    onParticipantUserIdsChange={setParticipantUserIds}
+                    onSubmit={handleSubmit}
+                    maxExpenseDate={today()}
+                />
 
                 <Link to={`/groups/${id}`}>Back to the group</Link>
             </div>
