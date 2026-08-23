@@ -95,6 +95,8 @@ function GroupPage() {
                 <h1>{group.name}</h1>
                 {group.description && <p className="subtitle">{group.description}</p>}
 
+                <Link to={`/groups/${id}/members`}>Manage members</Link>
+
                 <section>
                     <h2>Expenses</h2>
                     <Link className="action" to={`/groups/${id}/expenses/new`}>Add an expense</Link>
@@ -127,6 +129,9 @@ function GroupPage() {
                     {settled ? (
                         <p className="balance">
                             Everyone is settled up. Balance: {money(group.baseCurrency, 0)}
+                            <br />
+                            
+                            
                         </p>
                     ) : (
                         <ul className="balance-list">
@@ -135,8 +140,11 @@ function GroupPage() {
                                     {balanceLine(member, group.baseCurrency)}
                                 </li>
                             ))}
+                            
                         </ul>
                     )}
+                    <Link to={`/groups/${id}/balance`}>View Detailed</Link>
+                    
                 </section>
 
                 <section>
