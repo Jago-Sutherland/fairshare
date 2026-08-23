@@ -37,6 +37,7 @@ function EditExpense() {
                 setDescription(expenseResult.expense.description);
                 setPaidByUserId(String(expenseResult.expense.paidByUserId));
                 setExpenseDate(expenseResult.expense.expenseDate);
+                setParticipantUserIds(expenseResult.expense.participantUserIds.map(String));
             }
             setLoading(false);
         }

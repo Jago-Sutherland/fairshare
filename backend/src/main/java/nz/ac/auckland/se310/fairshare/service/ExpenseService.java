@@ -180,6 +180,10 @@ public class ExpenseService {
                 expense.getAmount(),
                 expense.getDescription(),
                 expense.getExpenseDate(),
-                expense.getCreatedAt());
+                expense.getCreatedAt(),
+                expenseShareRepository.findByExpenseId(expense.getId()).stream()
+                    .map(share -> share.getUser().getId())
+                    .sorted()
+                    .toList());
     }
 }

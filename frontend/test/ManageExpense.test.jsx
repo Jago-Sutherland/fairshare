@@ -24,7 +24,14 @@ const MEMBERS = [
 beforeEach(() => {
     vi.clearAllMocks();
     getGroupMembers.mockResolvedValue({ members: MEMBERS });
-    getExpense.mockResolvedValue({ expense: { id: 9, amount: '42.50', description: 'Groceries', paidByUserId: 2, expenseDate: '2024-06-15' } });
+    getExpense.mockResolvedValue({ expense: {
+        id: 9,
+        amount: '42.50',
+        description: 'Groceries',
+        paidByUserId: 2,
+        expenseDate: '2024-06-15',
+        participantUserIds: [1, 2]
+    } });
     updateExpense.mockResolvedValue({ expense: { id: 9 } });
 });
 
@@ -39,21 +46,28 @@ function renderPage() {
     );
 }
 
+it('preselects the expense participants', async () => {
+    renderPage();
+
+    expect(await screen.findByRole('checkbox', { name: 'alice' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'bob' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'carol' })).not.toBeChecked();
+});
+
 it('AC3: split across a subset of members', async () => {
     const user = userEvent.setup();
     renderPage();
 
     await user.selectOptions(await screen.findByLabelText('Paid by'), '2');
-    // Select only Alice and Bob as participants
-    await user.click(screen.getByLabelText('alice'));
-    await user.click(screen.getByLabelText('bob'));
+    // Alice and Bob are the saved participants; add Carol to change the split.
+    await user.click(screen.getByLabelText('carol'));
     await user.click(screen.getByRole('button', { name: 'Save expense' }));
     expect(updateExpense).toHaveBeenCalledWith('1', '9', {
         amount: '42.50',
         description: 'Groceries',
         paidByUserId: 2,
         expenseDate: '2024-06-15',
-        participantUserIds: [1, 2], // Only Alice and Bob
+        participantUserIds: [1, 2, 3],
     });
 });
 
@@ -64,6 +78,8 @@ it('AC6: at least one participant must be selected', async () => {
     await user.type(await screen.findByLabelText('Amount'), '42.50');
     await user.type(screen.getByLabelText('Description'), 'Groceries');
     await user.selectOptions(screen.getByLabelText('Paid by'), '2');
+    await user.click(screen.getByLabelText('alice'));
+    await user.click(screen.getByLabelText('bob'));
     await user.click(screen.getByRole('button', { name: 'Save expense' }));
     expect(await screen.findByText('At least one participant must be selected.')).toBeInTheDocument();
     expect(updateExpense).not.toHaveBeenCalled();

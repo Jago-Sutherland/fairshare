@@ -97,6 +97,7 @@ class ExpenseIntegrationTest {
         assertThat(created.paidByUserId()).isEqualTo(bobId);
         assertThat(created.paidByUsername()).isEqualTo("bob");
         assertThat(created.expenseDate()).isEqualTo(LocalDate.of(2026, Month.AUGUST, 1));
+        assertThat(created.participantUserIds()).containsExactlyInAnyOrder(aliceId, bobId);
         assertThat(expenseRepository.findById(created.id())).isPresent();
     }
 
