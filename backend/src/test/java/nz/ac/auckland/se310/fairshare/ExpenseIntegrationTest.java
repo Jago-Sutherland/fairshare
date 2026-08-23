@@ -257,6 +257,20 @@ class ExpenseIntegrationTest {
                 Map.entry(aliceId, new BigDecimal("-25.00")));
     }
 
+    @Test
+    void ac7_editingAnExpensePersistsTheNewExpenseDate() {
+        LocalDate originalDate = LocalDate.of(2026, Month.AUGUST, 1);
+        LocalDate updatedDate = LocalDate.of(2026, Month.AUGUST, 15);
+        ExpenseResponse created = expenseService.createExpense(groupId, new CreateExpenseRequest(
+                new BigDecimal(GROCERIES_AMOUNT), GROCERIES, bobId, memberIds, originalDate), aliceId);
+
+        expenseService.updateExpense(groupId, new CreateExpenseRequest(
+                new BigDecimal(GROCERIES_AMOUNT), GROCERIES, bobId, memberIds, updatedDate), aliceId, created.id());
+
+        assertThat(expenseService.getExpense(groupId, created.id(), aliceId).expenseDate())
+                .isEqualTo(updatedDate);
+    }
+
     @Test 
     void ac7_removingAParticipantFromAnExpenseUpdatesTheBalances() {
         groupService.addMember(groupId, CAROL_EMAIL, aliceId);

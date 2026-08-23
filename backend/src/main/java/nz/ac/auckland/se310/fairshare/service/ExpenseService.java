@@ -98,6 +98,9 @@ public class ExpenseService {
         expense.setAmount(amount);
         expense.setDescription(request.description().trim());
         expense.setPaidBy(payer.getUser());
+        if (request.expenseDate() != null) {
+            expense.setExpenseDate(request.expenseDate());
+        }
 
         expenseRepository.save(expense);
     }

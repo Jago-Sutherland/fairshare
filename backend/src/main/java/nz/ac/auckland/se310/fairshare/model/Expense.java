@@ -55,6 +55,7 @@ public class Expense {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public LocalDate getExpenseDate() { return expenseDate; }
+    public void setExpenseDate(LocalDate expenseDate) { this.expenseDate = expenseDate; }
     public Instant getCreatedAt() { return createdAt; }
 
     @Override
