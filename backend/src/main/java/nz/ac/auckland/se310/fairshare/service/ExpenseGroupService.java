@@ -145,7 +145,7 @@ public class ExpenseGroupService {
     public void markSettlementPaid(Long groupId, Long fromUserId, Long toUserId, Long currentUserId) {
         // Only the payer or the recipient may mark the settlement as paid (AC5, AC8)
         if (!List.of(fromUserId, toUserId).contains(currentUserId)) {
-            throw new GroupMemberConflictException("User not allowed to mark settlement as paid");
+            throw new GroupMemberConflictException("User not allowed to marked settlement as paid");
         }
 
         ExpenseGroup group = requireMemberGroup(groupId, currentUserId);
